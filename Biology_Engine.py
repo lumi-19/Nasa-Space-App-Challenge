@@ -311,7 +311,7 @@ def st_lottie_embed(url, height=160):
     components.html(lottie_html, height=height+20)
 
 st_lottie_embed("https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json", height=140)
-st.title("🚀 NASA Space Biology Knowledge Engine — Enhanced")
+st.title("🚀 NASA Space Biology Knowledge Engine")
 
 # Sidebar controls
 st.sidebar.header("⚙️ Controls")
