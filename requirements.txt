@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+scikit-learn
+wordcloud
+pyvis
+gtts
+requests
