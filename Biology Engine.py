@@ -1,11 +1,5 @@
-
-# Requirements: pandas, streamlit, plotly, requests
-# Optional (improves UX): pyvis, wordcloud, scikit-learn, gtts
-#
-# Replace file paths below with your local CSVs if needed.
-# Author: updated for Gondal (Space Biology Knowledge Engine)
-
 import pandas as pd
+from pathlib import Path
 import streamlit as st
 import re
 import requests
@@ -43,28 +37,39 @@ try:
 except Exception:
     GTTS_AVAILABLE = False
 
-# ------------------------------
-# File paths (keep your original paths)
-# ------------------------------
-file_main = r"C:\Users\HP\Desktop\Nasa\space_bio_kg\data\SB_publications\abstracts.csv"
-file_result = r"C:\Users\HP\Desktop\Nasa\space_bio_kg\data\SB_publications\Ressult.csv"
-file_abstract = r"C:\Users\HP\Desktop\Nasa\space_bio_kg\data\SB_publications\abstract.csv"
-file_author = r"C:\Users\HP\Desktop\Nasa\space_bio_kg\data\SB_publications\Author.csv"
+
+base_path = Path(__file__).parent
 
 # ------------------------------
-# Load data (safe)
+# Define file paths (relative to script)
+# ------------------------------
+file_main = base_path / "abstracts.csv"
+file_result = base_path / "Ressult.csv"
+file_abstract = base_path / "abstract.csv"
+file_author = base_path / "Author.csv"
+
+# ------------------------------
+# Safe CSV loader
 # ------------------------------
 def load_safe(path):
     try:
-        return pd.read_csv(path)
+        df = pd.read_csv(path)
+        st.success(f"✅ Loaded: {path.name} ({len(df)} rows)")
+        return df
+    except FileNotFoundError:
+        st.error(f"❌ File not found: {path}")
+        return pd.DataFrame()
     except Exception as e:
-        st.error(f"Failed to load {path}: {e}")
+        st.error(f"⚠️ Failed to load {path.name}: {e}")
         return pd.DataFrame()
 
-df_main = load_safe(file_main)      # Title + Link
-df_result = load_safe(file_result)  # Result
+# ------------------------------
+# Load data safely
+# ------------------------------
+df_main = load_safe(file_main)       # Title + Link
+df_result = load_safe(file_result)   # Result
 df_abstract = load_safe(file_abstract)  # Abstract
-df_author = load_safe(file_author)  # Author + Date
+df_author = load_safe(file_author)   # Author + Date
 
 # normalize and assemble search_df
 if "Date" in df_author.columns:
@@ -591,3 +596,4 @@ st.markdown(f"- Papers reporting no-effect results: **{len(no_effect)}**")
 csv_bytes = page_results.to_csv(index=False).encode("utf-8")
 st.download_button("⬇️ Download this page results (CSV)", data=csv_bytes,
                    file_name="page_results.csv", mime="text/csv")
+
